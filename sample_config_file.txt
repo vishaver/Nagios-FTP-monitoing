@@ -1,0 +1,75 @@
+define command{
+command_name    check_ftp_rw
+command_line    /usr/local/nagios/libexec/check_ftp_rw --host $HOSTADDRESS$ --user $ARG1$ --password $ARG2
+}
+
+define  host{
+        name                    ftp-server      ; The name of this host template
+        use                     generic-host    ; Inherit default values from the generic-host template
+        check_period            24x7            ; By default, Windows servers are monitored round the c lock
+        max_check_attempts      3                       ; Re-check the service up to 4 times in order to determine its final (hard) state
+        normal_check_interval   5                       ; Check the service every 5 minutes under normal conditions
+        retry_check_interval    3                       ; Re-check the service every minute until a hard state can be determined
+        check_command           check-host-alive        ; Default command to check if servers are "alive"
+        notification_period     24x7            ; Send notification out at any time - day or night
+        notification_options    u,d,r           ; Only send notifications for specific host states
+        contact_groups          admins          ; Notifications get sent to the admins by default
+        register                0               ; DONT REGISTER THIS - ITS JUST A TEMPLATE
+        }
+
+
+define service{
+        name                    ftp-service
+        max_check_attempts      3                       ; Re-check the service up to 3 times in order to determine its final (hard) state
+        normal_check_interval   3                      ; Check the service every 10 minutes under normal conditions
+        retry_check_interval    1                       ; Re-check the service every two minutes until a hard state can be determined
+        contact_groups          admins                  ; Notifications get sent out to everyone in the 'admins' group
+        notification_options    u,r,c                  ; Send notifications about warning, unknown, critical, and recovery events
+        notification_interval   60                      ; Re-notify about service problems every hour
+        notification_period     24x7                    ; Notifications can be sent out at any time
+        register                0
+        active_checks_enabled           1                       ; Active service checks are enabled
+        passive_checks_enabled          1                       ; Passive service checks are enabled/accepted
+        parallelize_check               1                       ; Active service checks should be parallelized (disabling this can lead to major performance problems)
+        obsess_over_service             1                       ; We should obsess over this service (if necessary)
+        check_freshness                 0                       ; Default is to NOT check service 'freshness'
+        notifications_enabled           1                       ; Service notifications are enabled
+        event_handler_enabled           1                       ; Service event handler is enabled
+        flap_detection_enabled          1                       ; Flap detection is enabled
+        process_perf_data               1                       ; Process performance data
+        retain_status_information       1                       ; Retain status information across program restarts
+        retain_nonstatus_information    1                       ; Retain non-status information across program restarts
+        is_volatile                     0                       ; The service is not volatile
+        check_period                    24x7                    ; The service can be checked at any time of the day
+        contact_groups                  admins                  ; Notifications get sent out to everyone in the 'admins' group
+}
+
+define host{
+        use             ftp-server      ; Inherit default values from a template
+        host_name       hostnameA       ; The name we're giving to this host
+        alias           hostalias  ; A longer name associated with the host
+        address         IP_address     ; IP address of the host
+        hostgroups      Hostgroupname     ; Host groups this server is associated with
+        }
+
+define host{
+        use             ftp-server      ; Inherit default values from a template
+        host_name       hostnameB      ; The name we're giving to this host
+        alias           hostalias  ; A longer name associated with the host
+        address         IP_address     ; IP address of the host
+        hostgroups      Hostgroupname     ; Host groups this server is associated with
+        }
+
+define hostgroup{
+        hostgroup_name  Hostgroupname                ; The name of the hostgroup
+        alias           Hostgroupalias       ; Long name of the group
+        members          hostnameA,hostnameB  ; Comma separated list of hosts that belong to this group
+        }
+
+define service{
+        use                     ftp-service
+        hostgroup_name          Hostgroupname
+        service_description     FTP CHECK
+        check_command           check_ftp_rw!username!passwd
+}
+
