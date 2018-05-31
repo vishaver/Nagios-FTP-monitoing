@@ -1,10 +1,8 @@
 # Nagios-FTP-monitoing
-
-First of all you need to install Nagios core 4.2.0. Its an open source and available for free.
-
-Configuration file mostly resides at /usr/local/nagios/etc
-
-Once you are decided with config file attributes then you can use tool addhostnagios.sh to add/delete host/hostgroups automatically. User is not required to manually edit/add configuration. Since its the responsiblity of tool to add or delete configration,  so the configuration remains consistent and error free. This tool helps most when your config size increases. 
+# Custom automation to do auto configuration in negios config. 
+#First of all you need to install Nagios core 4.2.0. Its an open source and available for free.
+#Configuration file mostly resides at /usr/local/nagios/etc
+#Once you are decided with config file attributes then you can use tool addhostnagios.sh to add/delete host/hostgroups automatically. User is not required to manually edit/add configuration. Since its the responsiblity of tool to add or delete configration,  so the configuration remains consistent and error free. This tool helps most when your config size increases. 
 
 How to use it?
 
